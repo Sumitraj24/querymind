@@ -1,0 +1,20 @@
+# Local PostgreSQL loaded with the demo dataset and a read-only user, for trying "live" mode.
+#   docker compose up -d
+#   DATABASE_URL=postgresql://querymind_readonly:readonly_dev_password@localhost:5433/querymind
+# Development only: the passwords below are not secrets.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: querymind
+      POSTGRES_USER: querymind_admin
+      POSTGRES_PASSWORD: admin_dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/demo-seed.sql:/docker-entrypoint-initdb.d/01-demo-seed.sql:ro
+      - ./db/docker-readonly-user.sh:/docker-entrypoint-initdb.d/02-readonly-user.sh:ro
+      - ./db/create-readonly-user.sql:/querymind/create-readonly-user.sql:ro
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
